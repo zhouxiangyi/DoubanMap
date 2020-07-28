@@ -17,7 +17,6 @@ const options = {
 
 
 }
-console.log(options.dojoConfig.packages[0].location)
 export default {
     options
 }
