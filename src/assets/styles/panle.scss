@@ -1,0 +1,13 @@
+@import "variable.scss";
+//弹窗样式修改
+.vl-notify.vl-notify-main{
+  border: none !important;
+  .vl-notice-title{
+      background: @color-background !important;
+      color: @color-text !important;
+      .icon-remove{
+        color: @color-text !important;
+      }
+  }
+
+}

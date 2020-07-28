@@ -1,0 +1,9 @@
+@import "variable.scss";
+
+.defaultdiv(){
+    position: absolute;
+    border-radius: 5px;
+    color: @color-text;
+    background: @color-background;
+    
+}
