@@ -35,7 +35,7 @@
 						</div>
 						<!-- 评分 -->
 						<div class="rate">
-							<van-rate count="5" :allow-half="halfstart" size="6px" v-model="item.halfrate" readonly />
+							<van-rate count="5" :allow-half="halfstart" size="6px" v-model="item.halfrate" readonly  color="#ffd21e" />
 							<div class="value">
 								{{item.rating.average}}
 							</div>
@@ -49,10 +49,9 @@
 		<!-- 口碑,top横向榜单 -->
 		<div class="doubantop">
 			<ul class="doubantop-content">
-				<li v-for="(item,index) in danbantoplist" class="doubantop-item">
+				<li v-for="(item,index) in danbantoplist" class="doubantop-item" :key = "index">
 					<!-- 背景圖高斯模糊處理 -->
-					<div class="bg" :style='{backgroundImage:"url("+ item.bgimg + ")" } '>
-
+					<div class="bg" :style='{backgroundImage:"url("+ item.bgimg + ")" }'>
 					</div>
 					<!-- 背景圖颜色模糊 -->
 					<div class="bgs">
@@ -64,9 +63,8 @@
 							<!-- 	<div class="updatetime">每周五更新一次</div> -->
 						</div>
 						<div class="itemlist">
-
 							<ul>
-								<li v-for="(sonitem,sonindex) in item.items" class="itemlist-item">
+								<li v-for="(sonitem,sonindex) in item.items" class="itemlist-item" :key = "sonindex">
 									<div class="index">{{sonindex+1}}</div>
 									<div class="itemlist-item-content">
 
@@ -77,7 +75,7 @@
 													{{sonitem.title}}
 												</span>
 												<div class="rate">
-													<van-rate count="5" :allow-half="halfstart" size="6px" v-model="sonitem.halfrate" readonly />
+													<van-rate count="5" :allow-half="halfstart" size="6px" v-model="sonitem.halfrate" readonly    color="#ffd21e" />
 													<div class="value">
 														{{sonitem.rating.average}}
 													</div>
@@ -97,6 +95,34 @@
 		<!-- 找电影 -->
 		<div class="findmovie">
 			<div class="title">找电影</div>
+			<div class="findmovecontent">
+				<div class="findline">
+					 <ul>
+						 
+						 <li 
+						 	v-for= "(item,index) in findmovieline" 
+							:key="index"
+							@click="tooglemore(item.type,$event)"
+						 >
+							<div class="texe">{{item.name}}</div>
+							<van-icon :name="item.iconclass" />
+						 </li>
+						 <li>
+							<van-icon name="more-o" />
+							<div class="texe">更多</div>		
+						 </li>
+					 </ul>
+
+				</div>
+				<div class="findmore" v-show="showfindmore">
+					<ul>
+						<li v-for="(item,index) in findmoivemorelist" :key="index">
+							{{item}}
+						</li>
+					
+					</ul>	
+				</div>
+			</div>
 		</div>
 	</div>
 </template>
@@ -129,7 +155,38 @@
 				],
 				hotitemlist: null,
 				hottatal: null,
-				danbantoplist: []
+				danbantoplist: [],
+				findmovieline:[
+					{
+						name:"类型",
+						iconclass:"arrow-down",
+						type:"genres"
+					},
+					{
+						name:"地区",
+						iconclass:"arrow-down",
+						type:"pubdates"
+					},
+					{
+						name:"年代",
+						iconclass:"arrow-down",
+						type:"year"
+					}
+				],
+				findmoivemore:{
+					genres:[
+						'全部'
+					],
+					pubdates:[
+						'全部'
+					],
+					year:[
+						'全部'
+					],
+				},
+			    findmoivemorelist:[],
+				showfinddata:false,
+				showfindmore:false
 
 			}
 		},
@@ -258,6 +315,44 @@
 
 				})
 			},
+			//获取top电影数据所有的
+			getTopMoives() {
+				this.DBAPI.getTopMoive({
+					apikey: config.doubankey,
+					count: 250
+				}, 'get').then((res) => {
+				
+					for(let item of res.subjects){
+						//添加类型
+						for(let sonitem of item.genres){
+						
+							this.findmoivemore.genres.push(sonitem)
+						
+						}
+						//地区
+						if(item.pubdates.length===1){
+							let pub = item.pubdates[0].slice(11, item.pubdates[0].length-1)
+							this.findmoivemore.pubdates.push(pub)
+						}else{
+							let pub = item.pubdates[1].slice(11, item.pubdates[1].length-1)
+							this.findmoivemore.pubdates.push(pub)
+						}
+						//时间
+						this.findmoivemore.year.push(item.year)
+						
+
+					}
+					this.findmoivemore.genres = new Set(this.findmoivemore.genres)
+					this.findmoivemore.pubdates = new Set(this.findmoivemore.pubdates)
+					this.findmoivemore.year = new Set(this.findmoivemore.year)
+
+					this.showfinddata = true
+
+					
+					
+
+				})
+			},
 			//获取新片的排行
 			getNewmovies() {
 				this.DBAPI.getNewmovies({
@@ -292,6 +387,24 @@
 				this.getTopMoive()
 				this.getNewmovies()
 				this.getWeeklyMoive()
+				this.getTopMoives()
+				
+			},
+			//找电影，点击事件
+			tooglemore(type,e){
+				if(type === 'genres'){
+					this.findmoivemorelist = this.findmoivemore.genres
+				}else if(type === 'pubdates'){
+					this.findmoivemorelist = this.findmoivemore.pubdates
+				}else{
+					this.findmoivemorelist = this.findmoivemore.year
+				}
+			
+
+				if(this.showfinddata){
+					this.showfindmore = !this.showfindmore
+				}
+			
 				
 			}
 		}
@@ -353,13 +466,13 @@
 
 				/* IE 10+ */
 				li {
-					width: 4.26rem;
+					width: 5.26rem;
 					padding-right: .4rem;
 
 					// height: 6.08rem;
 					img {
 						// width: 100%;
-						height: 6.08rem;
+						height: 7.08rem;
 						border-radius: 5%;
 					}
 
@@ -528,6 +641,46 @@
 		}
 		.findmovie{
 			margin-top: 20px;
+			height: 10000px;
+			width: 100%;
+			.findmovecontent{
+				.findline{
+					width: 100%;
+					border:1px solid red ;
+					border-left:none ;
+					border-right:none ;
+					ul{
+					   display: flex;
+					   justify-content: space-around;
+					       padding: 0.53rem 0;
+					   li{
+						   display: flex;
+						   font-size: .6rem;
+					   }
+					}
+					
+				}
+				.findmore{
+					width: 100%;
+					background: #e2e2e2;;
+					font-size: .6rem;
+					border-radius:0px 0px 1rem 1rem;
+					ul{
+						display: flex;
+						padding: 0.53rem;
+						justify-content: space-around;
+						flex-wrap:wrap;
+						li{
+							background: white;
+							width: 22%;
+							height:1.44rem;
+							line-height: 1.44rem;
+    						text-align: center;
+							margin-bottom: .533rem;
+						}
+					}
+				}
+			}
 		}
 	}
 </style>
