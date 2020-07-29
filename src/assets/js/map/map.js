@@ -11,7 +11,7 @@ class ZMaps {
 		this.modules = modules
 		this._container = null
 	}
-	init() {
+	async init() {
 		//新建地图
 		this.initMap('Amap')
 		//新建2d视图
@@ -79,6 +79,7 @@ class ZMaps {
 		//this.ActiveView.ui.add(zoom, 'bottom-left')
 		
 	}
+	//
 	
 
 }
