@@ -116,14 +116,19 @@
 			initMapVue() {
 				gisMoudls.loadArcgisMoudls().then((res) => {
 					// console.log(res)
-					this.ZMaps = new ZMap(res)
-					this.ZMaps.init().then(()=>{
+					let moudls = res
+					this.ZMaps = new ZMap(moudls)
+					this.ZMaps.init().then(()=>{ 
 						console.log(this.ZMaps._Map)
 						//地图操作类的载入注册
 						this.MapAction  = new MapAction(
 							this.ZMaps._Map,
 							this.ZMaps.ActiveView,
-							this.ZMaps
+							this.ZMaps,
+							moudls,
+							this.ZMaps._MapView,
+							this.ZMaps._SceneView
+							
 						) 
 						this.MapAction.location()
 					})

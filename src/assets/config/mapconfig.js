@@ -1,6 +1,6 @@
 const mapConfig = {
 	ArcGISAPI: {
-		APIURL: "https://js.arcgis.com/4.15/",
+		APIURL: "http://39.100.62.29:9921/library/4.14/init.js",
 		dojoConfig: {
 			async: true,
 			packages: [{
@@ -9,7 +9,7 @@ const mapConfig = {
 				name: 'widgets'
 			}]
 		},
-		cssurl:"https://js.arcgis.com/4.16/esri/themes/light/main.css"
+		cssurl:"http://39.100.62.29:9921/library/4.14/esri/themes/light/main.css"
 	}
 }
 export default mapConfig

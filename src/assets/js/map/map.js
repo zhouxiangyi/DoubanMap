@@ -79,7 +79,8 @@ class ZMaps {
 		//this.ActiveView.ui.add(zoom, 'bottom-left')
 		
 	}
-	//
+	//创建GraphicLayer。用于绘制和各种临时点的显示
+	
 	
 
 }

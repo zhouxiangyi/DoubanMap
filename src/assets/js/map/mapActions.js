@@ -1,6 +1,7 @@
+import proj4 from 'proj4'
 //地图操作类
 class MapAction {
-	constructor(map, view, ZMap) {
+	constructor(map, view, ZMap, moudls, mapview, scenview) {
 		if (!(map instanceof Object)) {
 			// eslint-disable-next-line no-console
 			console.log("地图对象未指定，请指定目标地图对象");
@@ -8,11 +9,15 @@ class MapAction {
 		}
 		this.map = map;
 		this.view = view;
+		this.Zmap = ZMap;
+		this.moudls = moudls;
+		this.mapview = mapview;
+		this.scenview = scenview;
+
 	}
 	//定位
 	location() {
-		console.log(AMap)
-		
+		const _this = this
 		var options = {
 			'showButton': false, //是否显示定位按钮
 			/* LT LB RT RB */
@@ -30,16 +35,50 @@ class MapAction {
 				if (status == "complete") {
 					let lon = result.position.lng
 					let lat = result.position.lat
-					// let pointxy = transform([lon, lat], 'EPSG:4326', 'EPSG:3857')
-					console.log(status)
+					let pointxy = proj4(proj4('EPSG:4326'), proj4('EPSG:3857'), [lon, lat])
+					console.log(pointxy)
 					console.log(result)
-					return
+
 					let Posname = result.formattedAddress;
-					
+					//此处生成定位图层
+					let locationlayer = new _this.moudls.GraphicsLayer({
+						id: "positionlletayer"
+					});
+					//TODO,加入重力感应.
+					//创建点
+					let Point = {
+						type: "point", // autocasts as new Point()
+						longitude: lon,
+						latitude: lat
+					};
+					let markerSymbol = {
+						type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
+						color: [51, 133, 255],
+						outline: {
+							// autocasts as new SimpleLineSymbol()
+							color: [255, 255, 255],
+							width: 2
+						}
+					};
+					//创建grapha
+					let pointGraphic = new _this.moudls.Graphic({
+					          geometry: Point,
+					          symbol: markerSymbol
+					}); 
+					locationlayer.graphics.add(pointGraphic);
+					_this.map.add(locationlayer);
+					console.log(locationlayer)
+					//_this.view.goTo(pointGraphic)
+					//定位到
+					_this.view.goTo({
+					  target: pointGraphic,
+					  zoom: 18
+					});
+					return
 					map.getView().setCenter([lon, lat])
 					map.getView().setZoom(14)
-	
-	
+
+
 					let iconStyle = new Style({
 						image: new Icon(({
 							size: [18, 25],
