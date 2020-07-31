@@ -35,7 +35,7 @@
 						</div>
 						<!-- 评分 -->
 						<div class="rate">
-							<van-rate count="5" :allow-half="halfstart" size="6px" v-model="item.halfrate" readonly color="#ffd21e" />
+							<van-rate count="5" :allow-half="halfstart" size="10px" v-model="item.halfrate" readonly color="#ffd21e" />
 							<div class="value">
 								{{item.rating.average}}
 							</div>
@@ -74,7 +74,7 @@
 													{{sonitem.title}}
 												</span>
 												<div class="rate">
-													<van-rate count="5" :allow-half="halfstart" size="6px" v-model="sonitem.halfrate" readonly color="#ffd21e" />
+													<van-rate count="5" :allow-half="halfstart" size="10px" v-model="sonitem.halfrate" readonly color="#ffd21e" />
 													<div class="value">
 														{{sonitem.rating.average}}
 													</div>
@@ -141,7 +141,7 @@
 							  </div>
           					  <!-- 评分 -->
           					  <div class="rate">
-									<van-rate count="5" :allow-half="halfstart" size="2px" gutter="10px" v-model="item.halfrate" readonly color="#ffd21e" />
+									<van-rate count="5" :allow-half="halfstart" size="10px" gutter="10px" v-model="item.halfrate" readonly color="#ffd21e" />
 									<div class="value">
 										{{item.halfrate*2}}
 									</div>
@@ -908,7 +908,7 @@
 									}
 								}
 								.simpleinfo{
-									font-size: .426667rem;
+									font-size: .533333rem;
 									margin-bottom: .266667rem;
 								}
 								.tags{
