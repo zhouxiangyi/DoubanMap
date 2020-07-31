@@ -120,7 +120,7 @@
 				<keep-alive>
 					<div class="movielist">
 					<ul>
-						<li v-for="item in allmovies" :key="item.id">
+						<li v-for="item in allmovies.slice(0, 30)" :key="item.id">
 							<div class="images">
             					<div class="left">
 									<img :src="item.images.medium" alt="">
@@ -799,7 +799,6 @@
 
 		.findmovie {
 			margin-top: 1.75rem;
-			height: 10000px;
 			width: 100%;
 			.title{
 				color: black;
