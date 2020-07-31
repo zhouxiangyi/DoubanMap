@@ -141,7 +141,7 @@
 							  </div>
           					  <!-- 评分 -->
           					  <div class="rate">
-									<van-rate count="5" :allow-half="halfstart" size="10px" gutter="10px" v-model="item.halfrate" readonly color="#ffd21e" />
+									<van-rate count="5" :allow-half="halfstart" size="6px" gutter="6px" v-model="item.halfrate" readonly color="#ffd21e" />
 									<div class="value">
 										{{item.halfrate*2}}
 									</div>
@@ -903,8 +903,8 @@
 									display: flex;
 									margin: .426667rem 0;
 									.value{
-										margin-left: .693333rem;
-										font-size:.64rem;
+										margin-left: .48rem;
+										font-size:.266667rem;
 									}
 								}
 								.simpleinfo{
