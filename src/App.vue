@@ -8,7 +8,7 @@
 <template>
 	<div id="app">
 		<!-- header和logo -->
-		<mheader/>
+		<mheader :htmlwidth="htmlwidth"  />
 		<!-- tab栏 -->
 		<ztabbar />
 		<transition 
@@ -24,11 +24,17 @@
 	export default {
 
 		name: 'App',
-		mounted(){
+		data(){
+			return{
+				htmlwidth:null
+			}
+		},
+		created(){
 			//移动端适配
 			//获得屏幕大小
 			let htmlwidth = document.documentElement.clientWidth || document.body.clientWidth;  //浏览器兼容
 			console.log("屏幕宽度："+htmlwidth) //iphone5:320 iphone6:375
+			this.htmlwidth = htmlwidth
 			//获得html DOM元素
 			let htmlDom = document.getElementsByTagName('html')[0];
 			
