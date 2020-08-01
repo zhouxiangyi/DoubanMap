@@ -35,12 +35,11 @@
 						</div>
 						<!-- 评分 -->
 						<div class="rate">
-							<van-rate count="5" :allow-half="halfstart" size="6px" v-model="item.halfrate" readonly color="#ffd21e" />
+							<van-rate count="5" :allow-half="halfstart" size="10px" v-model="item.halfrate" readonly color="#ffd21e" />
 							<div class="value">
 								{{item.rating.average}}
 							</div>
 						</div>
-
 					</div>
 
 				</li>
@@ -75,7 +74,7 @@
 													{{sonitem.title}}
 												</span>
 												<div class="rate">
-													<van-rate count="5" :allow-half="halfstart" size="6px" v-model="sonitem.halfrate" readonly color="#ffd21e" />
+													<van-rate count="5" :allow-half="halfstart" size="10px" v-model="sonitem.halfrate" readonly color="#ffd21e" />
 													<div class="value">
 														{{sonitem.rating.average}}
 													</div>
@@ -118,31 +117,51 @@
 
 					</ul>
 				</div>
-				<div class="movielist">
+				<keep-alive>
+					<div class="movielist">
 					<ul>
-						<li>
+						<li v-for="item in allmovies.slice(0, 30)" :key="item.id">
 							<div class="images">
             					<div class="left">
-									<img src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2614594787.jpg" alt="">
+									<img :src="item.images.medium" alt="">
 								</div>
-            					<div class="right"></div>
+            					<div class="right">
+									<van-swipe  :loop="false">
+  										<van-swipe-item v-for="(sonitem, index) in item.Movieimg" :key="index">
+    									<img v-lazy="sonitem.cover"/>
+  										</van-swipe-item>
+									</van-swipe>
+								</div>
           					</div>
           					<div class="info">
           					  <!-- 名称 -->
-          					  <span class="title">
-
-							  </span>
+          					  <div class="titlemoive">
+									<span>{{item.title}}</span>
+									（<span class="year">{{item.year}}</span>）
+							  </div>
           					  <!-- 评分 -->
-          					  <span class="rate"></span>
+          					  <div class="rate">
+									<van-rate count="5" :allow-half="halfstart" size="6px" gutter="6px" v-model="item.halfrate" readonly color="#ffd21e" />
+									<div class="value">
+										{{item.halfrate*2}}
+									</div>
+							  </div>
           					  <!-- 简介 -->
-          					  <div class="simpleinfo"></div>
+          					  <div class="simpleinfo">
+									{{item.hotcommit}}
+							  </div>
           					  <!-- 标签 -->
-          					  <div class="tags"></div>
+          					  <div class="tags">
+									<ul>
+										<van-tag  class="biaoqian" round  color="#f1c496"  text-color="#81502d">{{item.genres[0]}},{{item.genres[1]}}</van-tag>
+										<van-tag round  color="#f1c496" text-color="#81502d">{{item.directors[0].name}}</van-tag>
+									</ul>
+								</div>
           					</div>
 						</li>
 					</ul>
-				</div>
-				
+					</div>
+				</keep-alive>
 			</div>
 		</div>
 		
@@ -157,6 +176,10 @@
 		name: "DoubanContent",
 		data() {
 			return {
+				images: [
+        			'https://img.yzcdn.cn/vant/apple-1.jpg',
+        			'https://img.yzcdn.cn/vant/apple-2.jpg',
+				 ],
 				type: null,
 				value: 2.2,
 				halfstart: true,
@@ -281,14 +304,15 @@
 					}
 				]
 			}
-		},
-		mounted() {
 			if (this.type === 'movie') {
 				this.dataformatMovie()
 				console.log(this.danbantoplist)
 
 
 			}
+		},
+		mounted() {
+		
 
 		},
 		methods: {
@@ -336,122 +360,6 @@
 					apikey: config.doubankey,
 					count: 250
 				}, 'get').then((res) => {
-								for (let item of res.subjects) {
-						//添加类型
-						for (let sonitem of item.genres) {
-
-							this.findmoivemore.genres.push(sonitem)
-
-						}
-						//地区
-						if (item.pubdates.length === 1) {
-							let pub = item.pubdates[0].slice(11, item.pubdates[0].length - 1)
-							if(pub==='' || pub==='陆'){
-								pub = '其他地区'
-							}
-							this.findmoivemore.pubdates.push(pub)
-						} else {
-							let pub = item.pubdates[1].slice(11, item.pubdates[1].length - 1)
-							if(pub==='' || pub==='陆'){
-								pub = '其他地区'
-							}
-							this.findmoivemore.pubdates.push(pub)
-						}
-						//时间
-						
-						//根据年份进行年代判断
-						if(Number(item.year)>=1980&&Number(item.year)<1990){
-							this.findmoivemore.year.push('1980')
-						}else if(Number(item.year)>=1990&&Number(item.year)<2000){
-							this.findmoivemore.year.push('1990')
-						}else if(Number(item.year)>=2000&&Number(item.year)<2010){
-							this.findmoivemore.year.push('2000')
-						}else if(Number(item.year)>=1960&&Number(item.year)<1970){
-							this.findmoivemore.year.push('1960')
-						}else if(Number(item.year)>=1970&&Number(item.year)<1980){
-							this.findmoivemore.year.push('1970')
-						}else if(Number(item.year)>=2010&&Number(item.year)<2015){
-								this.findmoivemore.year.push('2010')
-						}else if(Number(item.year)>=2015){
-								this.findmoivemore.year.push(item.year)
-						}
-						else{
-							this.findmoivemore.year.push('1800')
-						}
-						//电影详情页
-						//请求电影剧照
-						this.DBAPI.getMovieimg({
-							apikey: config.doubankey,
-							count: 4
-						},item.id,'get').then((res)=>{
-							//剧照
-							item.Movieimg = res
-
-						})
-						//请求电影详细，描述和标签
-						this.DBAPI.getMoviemore({
-							apikey: config.doubankey
-						},item.id,'get').then((res)=>{
-							//剧照
-							item.moreinfos = res
-
-						})
-
-					}
-					//给全部电影赋值
-					this.allmovies = res.subjects
-					console.log('所有电影')
-					console.log(this.allmovies)
-					this.findmoivemore.genres = new Set(this.findmoivemore.genres)
-					this.findmoivemore.pubdates = new Set(this.findmoivemore.pubdates)
-					//处理年代排序
-					let years = []
-					years = [...new Set(this.findmoivemore.year)]
-					years.sort(function(a, b){return b - a});
-					this.findmoivemore.year = []
-					for(let item of years){
-						if(item === '1960'){
-							item='60年代'
-						}else if(item === '1970'){
-							item='70年代'
-						}else if(item === '1980'){
-							item='80年代'
-						}else if(item === '1990'){
-							item='90年代'
-						}else if(item === '2000'){
-							item='2000年代'
-						}else if(item === '2010'){
-							item='2010年代'
-						}else if(item === '1800'){
-							item='更早'
-						}
-						this.findmoivemore.year.push(item)
-						
-					}
-					//this.findmoivemore.year = _.orderBy()
-
-					
-					//赋值
-					res.items = res.subjects
-					//背景图设置，排名第一的
-					res.bgimg = res.items[0].images.medium
-					this.danbantoplist.push(res)
-					for (let item of res.items) {
-						item.halfrate = item.rating.average / 2
-					}
-
-					this.$Toast.clear()
-
-
-				})
-			},
-			//获取top电影数据所有的
-			getTopMoives() {
-				this.DBAPI.getTopMoive({
-					apikey: config.doubankey,
-					count: 250
-				}, 'get').then((res) => {
-
 					for (let item of res.subjects) {
 						//添加类型
 						for (let sonitem of item.genres) {
@@ -501,7 +409,9 @@
 							count: 4
 						},item.id,'get').then((res)=>{
 							//剧照
-							item.Movieimg = res
+							item.Movieimg = res.photos
+							 this.$forceUpdate();
+							//console.log(item.Movieimg)
 
 						})
 						//请求电影详细，描述和标签
@@ -510,14 +420,16 @@
 						},item.id,'get').then((res)=>{
 							//剧照
 							item.moreinfos = res
+							item.hotcommit = res.popular_comments[0].content
+							 this.$forceUpdate();
 
 						})
 
 					}
 					//给全部电影赋值
-					this.allmovies = res.subjects
+					this.allmovies =res.subjects //_.shuffle(res.subjects)
 					console.log('所有电影')
-					console.log(this.allmovies)
+				    
 					this.findmoivemore.genres = new Set(this.findmoivemore.genres)
 					this.findmoivemore.pubdates = new Set(this.findmoivemore.pubdates)
 					//处理年代排序
@@ -546,9 +458,19 @@
 					}
 					//this.findmoivemore.year = _.orderBy()
 
-					this.$Toast.clear()
-
-
+					
+					//赋值
+					res.items = res.subjects
+					//背景图设置，排名第一的
+					res.bgimg = res.items[0].images.medium
+					this.danbantoplist.push(res)
+					for (let item of res.items) {
+						item.halfrate = item.rating.average / 2
+					}
+					
+				    this.$Toast.clear()
+					
+					
 
 
 				})
@@ -877,7 +799,6 @@
 
 		.findmovie {
 			margin-top: 1.75rem;
-			height: 10000px;
 			width: 100%;
 			.title{
 				color: black;
@@ -911,7 +832,8 @@
 					;
 					font-size: .6rem;
 					border-radius: 0px 0px 1rem 1rem;
-
+					z-index: 1;
+					position: absolute;
 					ul {
 						display: flex;
 						padding: 0.53rem;
@@ -932,6 +854,73 @@
 							background: #05d714;
 							color: white;
 
+						}
+					}
+				}
+				.movielist{
+					padding: .48rem;
+					ul{
+						li{
+							margin-bottom: 1.066667rem;
+							.images{
+								display: flex;
+								justify-content: space-between;
+								.left{
+									height: 7.08rem;
+    								width: 25%;
+									img{
+										width: 100%;
+										height: 100%;
+										border-radius: 5%;
+									}
+								}
+								.right{
+									width: 72%;
+									height:7.08rem; 
+									border-radius:5%;
+									.van-swipe{
+										width: 100% !important;
+										height: 100% !important;
+										border-radius:5%;
+										img{
+											width: 100% ;
+											height: 100% ;
+											border-radius:5%;
+										}
+									}
+								}
+							}
+							.info{
+								.titlemoive{
+									color: black;
+									font-size: .853333rem;
+									.year{
+										color: #717070;
+									}
+								}
+								margin-top: .533333rem;
+								.rate{
+									display: flex;
+									margin: .426667rem 0;
+									.value{
+										margin-left: .48rem;
+										font-size:.266667rem;
+									}
+								}
+								.simpleinfo{
+									font-size: .533333rem;
+									margin-bottom: .266667rem;
+								}
+								.tags{
+									ul{
+										display: flex;
+										.biaoqian{
+											margin-right: .373333rem;	
+										}
+
+									}
+								}
+							}
 						}
 					}
 				}

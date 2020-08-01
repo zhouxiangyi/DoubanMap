@@ -13,10 +13,11 @@
       @click="onchangeCon"
     >
       <van-tab
-        v-for="(item,index) in tablist"
+        v-for="item in tablist"
         :title="item.name"
         :key="item.title"
         :name="item.title"
+        :disabled="item.disabled"
       >
         <router-view />
       </van-tab>
@@ -38,22 +39,27 @@ export default {
         {
           name: "电影",
           title: "movie",
+          disabled:false
         },
         {
           name: "电视",
           title: "tv",
+           disabled:true
         },
         {
           name: "读书",
           title: "book",
+          disabled:true
         },
         {
           name: "原创小说",
           title: "oribook",
+           disabled:true
         },
         {
           name: "音乐",
           title: "musicdb",
+           disabled:true
         },
       ],
     };
@@ -74,6 +80,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .douban {
+  margin-top: 2.666667rem;
   .tab {
     // border: 1px solid red!important;
   }

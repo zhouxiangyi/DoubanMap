@@ -10,18 +10,28 @@
 			<div class="header">
 				 <img src="../assets/default.png" alt="">
 				 <div class="title">SunFlower</div>
-				
-				 <van-icon class="icons" name="search"/>
+				 <!-- <van-icon class="icons" name="search"/> -->
 			</div>
 	</div>
 </template>
 <script>
+    import $ from 'jquery'
 	export default {
 		name: "mheader",
 		data() {
 			return {
 				
 			}
+		},
+		props:{
+		  'htmlwidth':{
+			   default:350,
+         	   type:Number
+		   }
+		},
+		mounted(){
+			console.log(this.htmlwidth)
+			// $(".header").width(this.htmlwidth)
 		},
 		methods: {
 			
@@ -33,8 +43,14 @@
 		.header{
 			display: flex;
 			line-height:2.135rem;
-			justify-content: space-between;
+			justify-content:center;
 			padding: 0.27rem  0.5rem;
+			position: fixed;
+			width: 100%;
+    		top: 0;
+    		z-index: 99;
+			background: white;
+			border-bottom:.053333rem solid #efeaea;
 			img{
 				//max-width: 2.135rem;
 				width: 2.135rem;
