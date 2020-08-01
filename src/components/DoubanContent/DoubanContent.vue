@@ -3,7 +3,7 @@
 		<div class="tabcard">
 			<ul>
 
-				<li v-for="(item,index) in tablist">
+				<li v-for="(item,index) in tablist" :key="index">
 					<img :src="item.iconurl" alt="">
 					<div class="title">
 						{{item.name}}
@@ -35,7 +35,7 @@
 						</div>
 						<!-- 评分 -->
 						<div class="rate">
-							<van-rate count="5" :allow-half="halfstart" size="6px" v-model="item.halfrate" readonly  color="#ffd21e" />
+							<van-rate count="5" :allow-half="halfstart" size="6px" v-model="item.halfrate" readonly color="#ffd21e" />
 							<div class="value">
 								{{item.rating.average}}
 							</div>
@@ -49,13 +49,13 @@
 		<!-- 口碑,top横向榜单 -->
 		<div class="doubantop">
 			<ul class="doubantop-content">
-				<li v-for="(item,index) in danbantoplist" class="doubantop-item" :key = "index">
+				<li v-for="(item,index) in danbantoplist" class="doubantop-item" :key="index">
 					<!-- 背景圖高斯模糊處理 -->
 					<div class="bg" :style='{backgroundImage:"url("+ item.bgimg + ")" }'>
 					</div>
 					<!-- 背景圖颜色模糊 -->
 					<div class="bgs">
-					
+
 					</div>
 					<div class="doubantop-item-content">
 						<div class="toptitle">
@@ -64,7 +64,7 @@
 						</div>
 						<div class="itemlist">
 							<ul>
-								<li v-for="(sonitem,sonindex) in item.items" class="itemlist-item" :key = "sonindex">
+								<li v-for="(sonitem,sonindex) in item.items.slice(0, 3)" class="itemlist-item" :key="sonindex">
 									<div class="index">{{sonindex+1}}</div>
 									<div class="itemlist-item-content">
 
@@ -75,7 +75,7 @@
 													{{sonitem.title}}
 												</span>
 												<div class="rate">
-													<van-rate count="5" :allow-half="halfstart" size="6px" v-model="sonitem.halfrate" readonly    color="#ffd21e" />
+													<van-rate count="5" :allow-half="halfstart" size="6px" v-model="sonitem.halfrate" readonly color="#ffd21e" />
 													<div class="value">
 														{{sonitem.rating.average}}
 													</div>
@@ -97,38 +97,62 @@
 			<div class="title">找电影</div>
 			<div class="findmovecontent">
 				<div class="findline">
-					 <ul>
-						 
-						 <li 
-						 	v-for= "(item,index) in findmovieline" 
-							:key="index"
-							@click="tooglemore(item.type,$event)"
-						 >
+					<ul>
+
+						<li v-for="(item,index) in findmovieline" :key="index" @click="tooglemore(item.type,$event)">
 							<div class="texe">{{item.name}}</div>
 							<van-icon :name="item.iconclass" />
-						 </li>
-						 <li>
+						</li>
+						<!-- <li>
 							<van-icon name="more-o" />
-							<div class="texe">更多</div>		
-						 </li>
-					 </ul>
+							<div class="texe">更多</div>
+						</li> -->
+					</ul>
 
 				</div>
 				<div class="findmore" v-show="showfindmore">
 					<ul>
-						<li v-for="(item,index) in findmoivemorelist" :key="index">
+						<li v-for="(item,index) in findmoivemorelist" :key="index" @click="findmoresingle(item,$event)">
 							{{item}}
 						</li>
-					
-					</ul>	
+
+					</ul>
 				</div>
+				<div class="movielist">
+					<ul>
+						<li>
+							<div class="images">
+            					<div class="left">
+									<img src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2614594787.jpg" alt="">
+								</div>
+            					<div class="right"></div>
+          					</div>
+          					<div class="info">
+          					  <!-- 名称 -->
+          					  <span class="title">
+
+							  </span>
+          					  <!-- 评分 -->
+          					  <span class="rate"></span>
+          					  <!-- 简介 -->
+          					  <div class="simpleinfo"></div>
+          					  <!-- 标签 -->
+          					  <div class="tags"></div>
+          					</div>
+						</li>
+					</ul>
+				</div>
+				
 			</div>
 		</div>
+		
 	</div>
 </template>
 
 <script>
 	import config from "../../assets/config/config.js"
+	import $ from 'jquery'
+	import _ from 'lodash'
 	export default {
 		name: "DoubanContent",
 		data() {
@@ -156,41 +180,50 @@
 				hotitemlist: null,
 				hottatal: null,
 				danbantoplist: [],
-				findmovieline:[
-					{
-						name:"类型",
-						iconclass:"arrow-down",
-						type:"genres"
+				findmovieline: [{
+						name: "类型",
+						iconclass: "arrow-down",
+						type: "genres"
 					},
 					{
-						name:"地区",
-						iconclass:"arrow-down",
-						type:"pubdates"
+						name: "地区",
+						iconclass: "arrow-down",
+						type: "pubdates"
 					},
 					{
-						name:"年代",
-						iconclass:"arrow-down",
-						type:"year"
+						name: "年代",
+						iconclass: "arrow-down",
+						type: "year"
 					}
 				],
-				findmoivemore:{
-					genres:[
+				findmoivemore: {
+					genres: [
 						'全部'
 					],
-					pubdates:[
+					pubdates: [
 						'全部'
 					],
-					year:[
+					year: [
 						'全部'
 					],
 				},
-			    findmoivemorelist:[],
-				showfinddata:false,
-				showfindmore:false
+				findmoivemorelist: [],
+				allmovies:[],//所有的电影
+				showfindmore: false,
+				currentgenres:'全部', //当前类型
+				currentpubdates:'全部',//当前地区
+				currentyear:'全部',//当前年份
+				currentype:'genres'//当前类型
 
 			}
 		},
 		created() {
+			this.$Toast.loading({
+				message: '努力加载中...',
+				duration: 0, //展示时长(ms)，值为 0 时，toast 不会消失
+				overlay: true, //是否显示遮罩层
+				forbidClick: true //是否禁止背景点击
+			});
 			this.type = this.$route.params.id
 			//根据类型判断list的内容
 			if (this.type === 'movie') {
@@ -268,8 +301,8 @@
 					//赋值
 					this.hotitemlist = res.subjects
 					this.hottatal = res.total
-					for(let item of this.hotitemlist){
-						item.halfrate = item.rating.average/2
+					for (let item of this.hotitemlist) {
+						item.halfrate = item.rating.average / 2
 					}
 					//this.danbantoplist.push(res)
 				})
@@ -289,8 +322,8 @@
 					res.updatetime = ""
 					//背景图设置，排名第一的
 					res.bgimg = res.items[0].images.medium
-					for(let item of res.items){
-						item.halfrate = item.rating.average/2
+					for (let item of res.items) {
+						item.halfrate = item.rating.average / 2
 					}
 					//赋值
 					this.danbantoplist.push(res)
@@ -301,17 +334,114 @@
 			getTopMoive() {
 				this.DBAPI.getTopMoive({
 					apikey: config.doubankey,
-					count: 3
+					count: 250
 				}, 'get').then((res) => {
-					console.log(res)
+								for (let item of res.subjects) {
+						//添加类型
+						for (let sonitem of item.genres) {
+
+							this.findmoivemore.genres.push(sonitem)
+
+						}
+						//地区
+						if (item.pubdates.length === 1) {
+							let pub = item.pubdates[0].slice(11, item.pubdates[0].length - 1)
+							if(pub==='' || pub==='陆'){
+								pub = '其他地区'
+							}
+							this.findmoivemore.pubdates.push(pub)
+						} else {
+							let pub = item.pubdates[1].slice(11, item.pubdates[1].length - 1)
+							if(pub==='' || pub==='陆'){
+								pub = '其他地区'
+							}
+							this.findmoivemore.pubdates.push(pub)
+						}
+						//时间
+						
+						//根据年份进行年代判断
+						if(Number(item.year)>=1980&&Number(item.year)<1990){
+							this.findmoivemore.year.push('1980')
+						}else if(Number(item.year)>=1990&&Number(item.year)<2000){
+							this.findmoivemore.year.push('1990')
+						}else if(Number(item.year)>=2000&&Number(item.year)<2010){
+							this.findmoivemore.year.push('2000')
+						}else if(Number(item.year)>=1960&&Number(item.year)<1970){
+							this.findmoivemore.year.push('1960')
+						}else if(Number(item.year)>=1970&&Number(item.year)<1980){
+							this.findmoivemore.year.push('1970')
+						}else if(Number(item.year)>=2010&&Number(item.year)<2015){
+								this.findmoivemore.year.push('2010')
+						}else if(Number(item.year)>=2015){
+								this.findmoivemore.year.push(item.year)
+						}
+						else{
+							this.findmoivemore.year.push('1800')
+						}
+						//电影详情页
+						//请求电影剧照
+						this.DBAPI.getMovieimg({
+							apikey: config.doubankey,
+							count: 4
+						},item.id,'get').then((res)=>{
+							//剧照
+							item.Movieimg = res
+
+						})
+						//请求电影详细，描述和标签
+						this.DBAPI.getMoviemore({
+							apikey: config.doubankey
+						},item.id,'get').then((res)=>{
+							//剧照
+							item.moreinfos = res
+
+						})
+
+					}
+					//给全部电影赋值
+					this.allmovies = res.subjects
+					console.log('所有电影')
+					console.log(this.allmovies)
+					this.findmoivemore.genres = new Set(this.findmoivemore.genres)
+					this.findmoivemore.pubdates = new Set(this.findmoivemore.pubdates)
+					//处理年代排序
+					let years = []
+					years = [...new Set(this.findmoivemore.year)]
+					years.sort(function(a, b){return b - a});
+					this.findmoivemore.year = []
+					for(let item of years){
+						if(item === '1960'){
+							item='60年代'
+						}else if(item === '1970'){
+							item='70年代'
+						}else if(item === '1980'){
+							item='80年代'
+						}else if(item === '1990'){
+							item='90年代'
+						}else if(item === '2000'){
+							item='2000年代'
+						}else if(item === '2010'){
+							item='2010年代'
+						}else if(item === '1800'){
+							item='更早'
+						}
+						this.findmoivemore.year.push(item)
+						
+					}
+					//this.findmoivemore.year = _.orderBy()
+
+					
 					//赋值
 					res.items = res.subjects
 					//背景图设置，排名第一的
 					res.bgimg = res.items[0].images.medium
 					this.danbantoplist.push(res)
-					for(let item of res.items){
-						item.halfrate = item.rating.average/2
+					for (let item of res.items) {
+						item.halfrate = item.rating.average / 2
 					}
+
+					this.$Toast.clear()
+
 
 				})
 			},
@@ -321,35 +451,105 @@
 					apikey: config.doubankey,
 					count: 250
 				}, 'get').then((res) => {
-				
-					for(let item of res.subjects){
+
+					for (let item of res.subjects) {
 						//添加类型
-						for(let sonitem of item.genres){
-						
+						for (let sonitem of item.genres) {
+
 							this.findmoivemore.genres.push(sonitem)
-						
+
 						}
 						//地区
-						if(item.pubdates.length===1){
-							let pub = item.pubdates[0].slice(11, item.pubdates[0].length-1)
+						if (item.pubdates.length === 1) {
+							let pub = item.pubdates[0].slice(11, item.pubdates[0].length - 1)
+							if(pub==='' || pub==='陆'){
+								pub = '其他地区'
+							}
 							this.findmoivemore.pubdates.push(pub)
-						}else{
-							let pub = item.pubdates[1].slice(11, item.pubdates[1].length-1)
+						} else {
+							let pub = item.pubdates[1].slice(11, item.pubdates[1].length - 1)
+							if(pub==='' || pub==='陆'){
+								pub = '其他地区'
+							}
 							this.findmoivemore.pubdates.push(pub)
 						}
 						//时间
-						this.findmoivemore.year.push(item.year)
 						
+						//根据年份进行年代判断
+						if(Number(item.year)>=1980&&Number(item.year)<1990){
+							this.findmoivemore.year.push('1980')
+						}else if(Number(item.year)>=1990&&Number(item.year)<2000){
+							this.findmoivemore.year.push('1990')
+						}else if(Number(item.year)>=2000&&Number(item.year)<2010){
+							this.findmoivemore.year.push('2000')
+						}else if(Number(item.year)>=1960&&Number(item.year)<1970){
+							this.findmoivemore.year.push('1960')
+						}else if(Number(item.year)>=1970&&Number(item.year)<1980){
+							this.findmoivemore.year.push('1970')
+						}else if(Number(item.year)>=2010&&Number(item.year)<2015){
+								this.findmoivemore.year.push('2010')
+						}else if(Number(item.year)>=2015){
+								this.findmoivemore.year.push(item.year)
+						}
+						else{
+							this.findmoivemore.year.push('1800')
+						}
+						//电影详情页
+						//请求电影剧照
+						this.DBAPI.getMovieimg({
+							apikey: config.doubankey,
+							count: 4
+						},item.id,'get').then((res)=>{
+							//剧照
+							item.Movieimg = res
+
+						})
+						//请求电影详细，描述和标签
+						this.DBAPI.getMoviemore({
+							apikey: config.doubankey
+						},item.id,'get').then((res)=>{
+							//剧照
+							item.moreinfos = res
+
+						})
 
 					}
+					//给全部电影赋值
+					this.allmovies = res.subjects
+					console.log('所有电影')
+					console.log(this.allmovies)
 					this.findmoivemore.genres = new Set(this.findmoivemore.genres)
 					this.findmoivemore.pubdates = new Set(this.findmoivemore.pubdates)
-					this.findmoivemore.year = new Set(this.findmoivemore.year)
+					//处理年代排序
+					let years = []
+					years = [...new Set(this.findmoivemore.year)]
+					years.sort(function(a, b){return b - a});
+					this.findmoivemore.year = []
+					for(let item of years){
+						if(item === '1960'){
+							item='60年代'
+						}else if(item === '1970'){
+							item='70年代'
+						}else if(item === '1980'){
+							item='80年代'
+						}else if(item === '1990'){
+							item='90年代'
+						}else if(item === '2000'){
+							item='2000年代'
+						}else if(item === '2010'){
+							item='2010年代'
+						}else if(item === '1800'){
+							item='更早'
+						}
+						this.findmoivemore.year.push(item)
+						
+					}
+					//this.findmoivemore.year = _.orderBy()
 
-					this.showfinddata = true
+					this.$Toast.clear()
 
-					
-					
+
+
 
 				})
 			},
@@ -365,8 +565,8 @@
 					//背景图设置，排名第一的
 					res.bgimg = res.items[0].images.medium
 					this.danbantoplist.push(res)
-					for(let item of res.items){
-						item.halfrate = item.rating.average/2
+					for (let item of res.items) {
+						item.halfrate = item.rating.average / 2
 					}
 
 				})
@@ -377,8 +577,8 @@
 					apikey: config.doubankey
 				}, 'get').then((res) => {
 					console.log(res)
-					
-			
+
+
 				})
 			},
 			//电影页数据整理，并赋值
@@ -387,24 +587,58 @@
 				this.getTopMoive()
 				this.getNewmovies()
 				this.getWeeklyMoive()
-				this.getTopMoives()
-				
+				//this.getTopMoives()
+
 			},
 			//找电影，点击事件
-			tooglemore(type,e){
-				if(type === 'genres'){
+			tooglemore(type, e) {
+				
+				this.showfindmore = !this.showfindmore
+				
+
+				let litype = null
+				if (type === 'genres') {
 					this.findmoivemorelist = this.findmoivemore.genres
-				}else if(type === 'pubdates'){
+					litype = this.currentgenres
+				} else if (type === 'pubdates') {
 					this.findmoivemorelist = this.findmoivemore.pubdates
-				}else{
+					litype = this.currentpubdates
+				} else {
 					this.findmoivemorelist = this.findmoivemore.year
+					litype = this.currentyear
 				}
+				//当前类型
+				this.currenttype = type
+			
+				//循环li ，进行筛选
+				setTimeout(()=>{
+					for(let item of $(".findmore ul li")){
+						if(item.innerText=== litype){
+							item.click()
+						}
+					}
+				},200)
 			
 
-				if(this.showfinddata){
-					this.showfindmore = !this.showfindmore
+
+			},
+
+			findmoresingle(name, e) {
+				console.log(this.findmoivemorelist)
+				//dom对象转jq对象
+				let jqe = $(e.target)
+				//获取下标
+				jqe.addClass('active').siblings().removeClass('active')
+				//判断类型进行赋值
+				if(this.currenttype==='genres'){
+						this.currentgenres = jqe.innerText
 				}
-			
+				else if(this.currenttype==='pubdates'){
+					this.currentpubdates = jqe[0].innerText
+				}else{
+					this.currentyear = jqe[0].innerText
+				}
+				
 				
 			}
 		}
@@ -546,7 +780,8 @@
 						z-index: -1;
 						// filter: blur(2px);
 					}
-					.bgs{
+
+					.bgs {
 						width: 100%;
 						height: 75%;
 						background-size: 100% 100%;
@@ -556,7 +791,7 @@
 						z-index: -1;
 						filter: blur(1.06rem);
 						top: 19%;
-						
+
 					}
 
 					//width:200px;
@@ -635,48 +870,68 @@
 
 				}
 
-		
+
 
 			}
 		}
-		.findmovie{
-			margin-top: 20px;
+
+		.findmovie {
+			margin-top: 1.75rem;
 			height: 10000px;
 			width: 100%;
-			.findmovecontent{
-				.findline{
+			.title{
+				color: black;
+    			padding: 0 .48rem;
+   	 			margin-bottom: .96rem;
+				font-weight: bold;
+			}
+			.findmovecontent {
+				.findline {
 					width: 100%;
-					border:1px solid red ;
-					border-left:none ;
-					border-right:none ;
-					ul{
-					   display: flex;
-					   justify-content: space-around;
-					       padding: 0.53rem 0;
-					   li{
-						   display: flex;
-						   font-size: .6rem;
-					   }
+					border: .0625rem solid #dcdada;
+					border-left: none;
+					border-right: none;
+
+					ul {
+						display: flex;
+						justify-content: space-around;
+						padding: 0.53rem 0;
+
+						li {
+							display: flex;
+							font-size: .6rem;
+						}
 					}
-					
+
 				}
-				.findmore{
+
+				.findmore {
 					width: 100%;
-					background: #e2e2e2;;
+					background: #e2e2e2;
+					;
 					font-size: .6rem;
-					border-radius:0px 0px 1rem 1rem;
-					ul{
+					border-radius: 0px 0px 1rem 1rem;
+
+					ul {
 						display: flex;
 						padding: 0.53rem;
 						justify-content: space-around;
-						flex-wrap:wrap;
-						li{
+						flex-wrap: wrap;
+
+						li {
 							background: white;
 							width: 22%;
-							height:1.44rem;
+							height: 1.44rem;
 							line-height: 1.44rem;
-    						text-align: center;
+							text-align: center;
 							margin-bottom: .533rem;
+							border-radius: .3125rem;
+						}
+
+						li.active {
+							background: #05d714;
+							color: white;
+
 						}
 					}
 				}
