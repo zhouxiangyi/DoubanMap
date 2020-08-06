@@ -120,7 +120,7 @@
 				<keep-alive>
 					<div class="movielist">
 					<ul>
-						<li v-for="item in allmovies.slice(0, 30)" :key="item.id">
+						<li v-for="item in filtermovies" :key="item.id">
 							<div class="images">
             					<div class="left">
 									<img :src="item.images.medium" alt="">
@@ -232,6 +232,7 @@
 				},
 				findmoivemorelist: [],
 				allmovies:[],//所有的电影
+				filtermovies:[],//筛选的电影
 				showfindmore: false,
 				currentgenres:'全部', //当前类型
 				currentpubdates:'全部',//当前地区
@@ -374,33 +375,55 @@
 								pub = '其他地区'
 							}
 							this.findmoivemore.pubdates.push(pub)
+							item.pubdates = pub
+							//强制刷新
+							 this.$forceUpdate();
 						} else {
 							let pub = item.pubdates[1].slice(11, item.pubdates[1].length - 1)
 							if(pub==='' || pub==='陆'){
 								pub = '其他地区'
 							}
 							this.findmoivemore.pubdates.push(pub)
+							item.pubdates = pub
+							//强制刷新
+							 this.$forceUpdate();
 						}
 						//时间
 						
 						//根据年份进行年代判断
 						if(Number(item.year)>=1980&&Number(item.year)<1990){
 							this.findmoivemore.year.push('1980')
+							item.pubyear = '80年代'
+							 this.$forceUpdate();
 						}else if(Number(item.year)>=1990&&Number(item.year)<2000){
 							this.findmoivemore.year.push('1990')
+							item.pubyear = '90年代'
+							 this.$forceUpdate();
 						}else if(Number(item.year)>=2000&&Number(item.year)<2010){
 							this.findmoivemore.year.push('2000')
+							item.pubyear = '2000年代'
+							 this.$forceUpdate();
 						}else if(Number(item.year)>=1960&&Number(item.year)<1970){
 							this.findmoivemore.year.push('1960')
+							item.pubyear = '60年代'
+							 this.$forceUpdate();
 						}else if(Number(item.year)>=1970&&Number(item.year)<1980){
 							this.findmoivemore.year.push('1970')
+							item.pubyear = '70年代'
+							 this.$forceUpdate();
 						}else if(Number(item.year)>=2010&&Number(item.year)<2015){
 								this.findmoivemore.year.push('2010')
+									item.pubyear = '2010年代'
+									 this.$forceUpdate();
 						}else if(Number(item.year)>=2015){
-								this.findmoivemore.year.push(item.year)
+							this.findmoivemore.year.push(item.year)
+								item.pubyear =item.year
+								 this.$forceUpdate();
 						}
 						else{
 							this.findmoivemore.year.push('1800')
+							item.pubyear ='更早'
+							 this.$forceUpdate();
 						}
 						//电影详情页
 						//请求电影剧照
@@ -427,9 +450,10 @@
 
 					}
 					//给全部电影赋值
-					this.allmovies =res.subjects //_.shuffle(res.subjects)
+					this.allmovies = res.subjects //_.shuffle(res.subjects)
+					this.filtermovies = this.allmovies.slice(0,30)
 					console.log('所有电影')
-				    
+				    console.log(this.allmovies)
 					this.findmoivemore.genres = new Set(this.findmoivemore.genres)
 					this.findmoivemore.pubdates = new Set(this.findmoivemore.pubdates)
 					//处理年代排序
@@ -546,6 +570,8 @@
 			},
 
 			findmoresingle(name, e) {
+				//电影数据的筛选
+		
 				console.log(this.findmoivemorelist)
 				//dom对象转jq对象
 				let jqe = $(e.target)
@@ -553,16 +579,131 @@
 				jqe.addClass('active').siblings().removeClass('active')
 				//判断类型进行赋值
 				if(this.currenttype==='genres'){
-						this.currentgenres = jqe.innerText
+						this.currentgenres = jqe[0].innerText
 				}
 				else if(this.currenttype==='pubdates'){
 					this.currentpubdates = jqe[0].innerText
 				}else{
 					this.currentyear = jqe[0].innerText
 				}
+
+				this.moviefilter(this.currentgenres,this.currentpubdates,this.currentyear)
+				//console.log(this.currentyear,this.currentgenres,this.currentpubdates)
 				
 				
-			}
+			},
+		    moviefilter(genres, pubdates, year) {
+      			//filtermovies
+      			//allmovies
+      			//进行筛选
+				  //1.当genres是全部的时候，其他不的时候
+      			if (genres === "全部" && (pubdates !== "全部") & (year !== "全部")) {
+		  			this.filtermovies = this.allmovies.filter((res)=>{
+						
+						  if(res.pubdates===pubdates&&res.pubyear===year){
+							  return res
+						   }
+					})
+					if(this.filtermovies.length===0){
+						this.$Toast.fail('暂无数据');
+						this.filtermovies = this.allmovies.slice(0,30)
+					}
+					this.$forceUpdate();
+				
+					 
+      			}
+      			//2.当pubdates是全部的时候，其他不的时候
+     			else if (genres !== "全部" && (pubdates === "全部") & (year !== "全部")) {
+					this.filtermovies = this.allmovies.filter((res)=>{
+						 let mygeners = res.genres.join(',')
+						  if(mygeners.includes(genres)&&res.pubyear===year){
+							  return res
+						  }
+					})
+					if(this.filtermovies.length===0){
+						this.$Toast.fail('暂无数据');
+						this.filtermovies = this.allmovies.slice(0,30)
+					}
+					this.$forceUpdate();
+     			}
+     			//3.当year是全部的时候，其他不的时候
+     			else if (genres !== "全部" && (pubdates !== "全部") & (year === "全部")) {
+					 this.filtermovies = this.allmovies.filter((res)=>{
+						 let mygeners = res.genres.join(',')
+						  if(mygeners.includes(genres)&&res.pubdates===pubdates){
+							  return res
+						  }
+					})
+					if(this.filtermovies.length===0){
+						this.$Toast.fail('暂无数据');
+						this.filtermovies = this.allmovies.slice(0,30)
+					}
+					this.$forceUpdate();
+	 			}
+	 			//4.当genres,pubdates是全部的时候，year不的时候
+     			else if (genres === "全部" && (pubdates === "全部") & (year !== "全部")) {
+					this.filtermovies = this.allmovies.filter((res)=>{
+						  
+						  if(res.pubyear===year){
+							  return res
+						  }
+					})
+					if(this.filtermovies.length===0){
+						this.$Toast.fail('暂无数据');
+						this.filtermovies = this.allmovies.slice(0,30)
+					}
+					this.$forceUpdate();
+	 			}
+	 			//5.当genres,year是全部的时候，pubdates不的时候
+	 			else if (genres === "全部" && (pubdates !== "全部") & (year === "全部")) {
+					this.filtermovies = this.allmovies.filter((res)=>{
+						  
+						  if(res.pubdates===pubdates){
+							  return res
+						  }
+					})
+					if(this.filtermovies.length===0){
+						this.$Toast.fail('暂无数据');
+						this.filtermovies = this.allmovies.slice(0,30)
+					}
+					this.$forceUpdate();
+
+
+				} 
+	 			//6.当pubdates,year是全部的时候，genres不的时候
+	 			else if (genres !== "全部" && (pubdates === "全部") & (year === "全部")) {
+					  	
+					 	this.filtermovies = this.allmovies.filter((res)=>{
+						  let mygeners = res.genres.join(',')
+						  if(mygeners.includes(genres)){
+							  return res
+						  }
+						})
+						if(this.filtermovies.length===0){
+							this.$Toast.fail('暂无数据');
+							this.filtermovies = this.allmovies.slice(0,30)
+						}
+						this.$forceUpdate();
+	 			}
+	 			 //7.当全是的时候
+	 			else if (genres === "全部" && (pubdates === "全部") & (year === "全部")) {
+					this.filtermovies = this.allmovies.slice(0,30)
+	 			}
+	 			 //8.当全不是的时候
+	 			else if (genres !== "全部" && (pubdates !== "全部") & (year !== "全部")) {
+				    this.filtermovies = this.allmovies.filter((res)=>{
+						 let mygeners = res.genres.join(',')
+						  if(mygeners.includes(genres)&&res.pubdates===pubdates&&res.pubyear===year){
+							  return res
+						  }
+					})
+					if(this.filtermovies.length===0){
+						this.$Toast.fail('暂无数据');
+						this.filtermovies = this.allmovies.slice(0,30)
+					}
+					this.$forceUpdate();
+     			}
+    		},
 		}
 	}
 </script>
