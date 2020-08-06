@@ -3,7 +3,7 @@
 		<div class="tabcard">
 			<ul>
 
-				<li v-for="(item,index) in tablist" :key="index">
+				<li v-for="(item,index) in tablist" :key="index" @click="togglediv(item.name,$event)">
 					<img :src="item.iconurl" alt="">
 					<div class="title">
 						{{item.name}}
@@ -703,7 +703,16 @@
 					}
 					this.$forceUpdate();
      			}
-    		},
+			},
+			togglediv(name,e){
+				let jqe = $(e.target)
+				if(name==='找电影'){
+					var findmovie_top = $('.findmovie').offset().top;
+					$('html,body').animate({scrollTop:findmovie_top-70},500);
+       			 	
+				}
+
+			},
 		}
 	}
 </script>
