@@ -22,6 +22,13 @@ module.exports = {
 		    pathRewrite: {
 		      '^/doubanapi': '/'
 		    }
+		  },
+		  '/baiduapi': {
+		    target: 'http://api.map.baidu.com',
+		    changeOrigin: true,
+		    pathRewrite: {
+		      '^/baiduapi': '/'
+		    }
 		  }
 		}
 	},

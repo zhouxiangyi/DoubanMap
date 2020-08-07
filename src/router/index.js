@@ -35,7 +35,12 @@ const routes = [{
 		// route level code-splitting
 		// this generates a separate chunk (about.[hash].js) for this route
 		// which is lazy-loaded when the route is visited.
-		component: () => import( /* webpackChunkName: "about" */ '../views/Map.vue')
+		component: () => import( /* webpackChunkName: "about" */ '../views/Map.vue'),
+		children: [{
+			path: "Layercontrol",
+			name: "Layercontrol",
+			component:() => import( /* webpackChunkName: "about" */ '../components/Map/LayerPop.vue')
+		  }]
 	}, ,
 	{
 		path: '/My',

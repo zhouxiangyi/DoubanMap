@@ -5,11 +5,14 @@ axios.defaults.headers.post['Content-Type'] = 'application/json';
 //axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
 var API_DB_URL = "/doubanapi"
 var API_Music_URL = ""
+var API_BaiduMap_URL = "/baiduapi"
 function request(url, params, method, type) {
   var dataurl = null
   if (type === "douban") {
     dataurl = API_DB_URL + url
-  } else {
+  } else if(type === "BaiduMap"){
+    dataurl = API_BaiduMap_URL + url
+  }else{
     dataurl = API_Music_URL + url
   }
   //var dataurl = `${API_BASE_URL}${url}`
@@ -65,6 +68,12 @@ var DBAPI = {
     return request(`/movie/subject/${id}`, data, method, 'douban')
   }
 }
-export default DBAPI
+var BaiduMapAPI = {
+  //其他坐标系转百度坐标
+  geoconv: function (data, method) {
+    return request('/geoconv/v1/', data, method, 'BaiduMap')
+  },
+}
+export {DBAPI,BaiduMapAPI}
 
 

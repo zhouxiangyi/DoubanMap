@@ -11,11 +11,11 @@ import router from './router'
 import store from './store'
 import Vant from 'vant';
 import 'vant/lib/index.css';
-import 'api/doubanapi.js'
+import 'api/httpapi.js'
 import { Toast } from 'vant';
 import { Lazyload } from 'vant';
 //导入数据请求js
-import DBAPI from './assets/js/api/doubanapi.js'
+import {DBAPI,BaiduMapAPI} from './assets/js/api/httpapi.js'
 //挂载到vue原型，供所有组件使用
 Vue.prototype.DBAPI = DBAPI;
 Vue.use(Lazyload,{

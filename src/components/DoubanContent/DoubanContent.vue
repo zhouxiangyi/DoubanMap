@@ -432,8 +432,11 @@
 							count: 4
 						},item.id,'get').then((res)=>{
 							//剧照
-							item.Movieimg = res.photos
-							 this.$forceUpdate();
+							if(res){
+								item.Movieimg = res.photos
+							 	this.$forceUpdate();
+							}
+						
 							//console.log(item.Movieimg)
 
 						})
@@ -442,9 +445,12 @@
 							apikey: config.doubankey
 						},item.id,'get').then((res)=>{
 							//剧照
-							item.moreinfos = res
-							item.hotcommit = res.popular_comments[0].content
-							 this.$forceUpdate();
+							if(res){
+								item.moreinfos = res
+								item.hotcommit = res.popular_comments[0].content
+							 	this.$forceUpdate();
+							}
+						
 
 						})
 

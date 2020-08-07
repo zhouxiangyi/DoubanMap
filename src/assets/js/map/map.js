@@ -13,13 +13,13 @@ class ZMaps {
 	}
 	async init() {
 		//新建地图
-		this.initMap('Amap')
+		this.initMap('Baidu')
 		//新建2d视图
-		this.createView('2d','mapBOX')
+		this.createView('2d', 'mapBOX')
 		this.ActiveView = this._MapView;
 		//新建3d视图
-		this.createView('3d',null)
-		
+		this.createView('3d', null)
+
 		this.MapWidgets()
 	}
 	//初始化地图
@@ -33,6 +33,9 @@ class ZMaps {
 
 		} else if (type === "Tianmap") {
 
+		} else if (type === "Baidu") {
+			//百度地图
+			basemaplayer = new this.modules.BaiduMapLayer();
 		} else if (type === "SlicingService") {
 
 		} else if (type === "dynamiclayer") {
@@ -50,13 +53,16 @@ class ZMaps {
 		})
 	}
 	//初始化地图容器
-	createView(type,divid) {
+	createView(type, divid) {
 		if (type === '2d') {
 			this._MapView = new this.modules.MapView({
 				container: divid,
 				map: this._Map,
-				center: [110.1, 23.8],
-				zoom: 3
+				center: [12639399.107106052,4135279.442009533],
+				zoom: 3,
+				spatialReference: {
+					wkid: 102100
+				}
 			});
 		} else {
 			this._SceneView = new this.modules.SceneView({
@@ -64,24 +70,24 @@ class ZMaps {
 				map: this._Map,
 				center: [110.1, 23.8],
 				zoom: 1
-			}) 
+			})
 		}
-		
+
 	}
 	//初始化地图控件
-	MapWidgets(){
+	MapWidgets() {
 		//隐藏缩放组件
 		this.ActiveView.ui._removeComponents(['zoom'])
 		//缩放组件
 		let zoom = new this.modules.Zoom({
-		       view: this.ActiveView
+			view: this.ActiveView
 		})
 		//this.ActiveView.ui.add(zoom, 'bottom-left')
-		
+
 	}
 	//创建GraphicLayer。用于绘制和各种临时点的显示
-	
-	
+
+
 
 }
 export default ZMaps

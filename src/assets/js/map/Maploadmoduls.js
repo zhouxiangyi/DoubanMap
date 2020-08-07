@@ -77,7 +77,8 @@ const gisMoudls = {
       ClassBreaksRenderer,
       CoordinateConversion,
       Daylight,
-	  GaodeLayer,
+     GaodeLayer,
+     BaiduMapLayer,
 	  Locate,
       Expand] =  await esrimoudls.loadModules([ "esri/config",
       "esri/request",
@@ -145,7 +146,8 @@ const gisMoudls = {
       "esri/renderers/ClassBreaksRenderer",
       "esri/widgets/CoordinateConversion",
       "esri/widgets/Daylight",
-	  "widgets/GaodeLayer",
+     "widgets/GaodeLayer",
+     "widgets/BaiduMapLayer",
 	  "esri/widgets/Locate",
       "esri/widgets/Expand"])
 		//定义模块
@@ -215,7 +217,8 @@ const gisMoudls = {
       ClassBreaksRenderer,
       CoordinateConversion,
       Daylight,
-	  GaodeLayer,
+     GaodeLayer,
+     BaiduMapLayer,
 	  Locate,
       Expand}
 		return Promise.resolve(Mygismoudls)
