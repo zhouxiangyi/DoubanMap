@@ -13,7 +13,7 @@ class ZMaps {
 	}
 	async init() {
 		//新建地图
-		this.initMap('Baidu')
+		this.initMap('Amap')
 		//新建2d视图
 		this.createView('2d', 'mapBOX')
 		this.ActiveView = this._MapView;
@@ -58,11 +58,8 @@ class ZMaps {
 			this._MapView = new this.modules.MapView({
 				container: divid,
 				map: this._Map,
-				center: [12639399.107106052,4135279.442009533],
-				zoom: 3,
-				spatialReference: {
-					wkid: 102100
-				}
+				center: [110.1, 23.8],
+				zoom: 3
 			});
 		} else {
 			this._SceneView = new this.modules.SceneView({

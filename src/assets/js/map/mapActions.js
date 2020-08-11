@@ -37,52 +37,41 @@ class MapAction {
 				if (status == "complete") {
 					let lon = result.position.lng
 					let lat = result.position.lat
-					BaiduMapAPI.geoconv({
-						coords: `${lon},${lat}`,
-						from: 1,
-						to: 6,
-						ak: config.baidumapkey,
-						output: "json"
-					}, 'get').then((res) => {
-						console.log(res)
-						let Posname = result.formattedAddress;
-						//此处生成定位图层
-						let locationlayer = new _this.moudls.GraphicsLayer({
-							id: "positionlletayer"
-						});
-						//TODO,加入重力感应.
-						//创建点
-						let Point = {
-							type: "point", // autocasts as new Point()
-							longitude: res.result[0].x,
-							latitude: res.result[0].y
-						};
-						let markerSymbol = {
-							type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
-							color: [51, 133, 255],
-							outline: {
-								// autocasts as new SimpleLineSymbol()
-								color: [255, 255, 255],
-								width: 2
-							}
-						};
-						//创建grapha
-						let pointGraphic = new _this.moudls.Graphic({
-							geometry: Point,
-							symbol: markerSymbol
-						});
-						locationlayer.graphics.add(pointGraphic);
-						_this.map.add(locationlayer);
-						console.log(locationlayer)
-						//_this.view.goTo(pointGraphic)
-						//定位到
-						_this.view.goTo({
-							target: pointGraphic,
-							zoom: 18
-						});
-
-
-					})
+					let Posname = result.formattedAddress;
+					//此处生成定位图层
+					let locationlayer = new _this.moudls.GraphicsLayer({
+						id: "positionlletayer"
+					});
+					//TODO,加入重力感应.
+					//创建点
+					let Point = {
+						type: "point", // autocasts as new Point()
+						longitude: lon,
+						latitude: lat
+					};
+					let markerSymbol = {
+						type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
+						color: [51, 133, 255],
+						outline: {
+							// autocasts as new SimpleLineSymbol()
+							color: [255, 255, 255],
+							width: 2
+						}
+					};
+					//创建grapha
+					let pointGraphic = new _this.moudls.Graphic({
+						geometry: Point,
+						symbol: markerSymbol
+					});
+					locationlayer.graphics.add(pointGraphic);
+					_this.map.add(locationlayer);
+					console.log(locationlayer)
+					//_this.view.goTo(pointGraphic)
+					//定位到
+					_this.view.goTo({
+						target: pointGraphic,
+						zoom: 18
+					});
 					let pointxy = proj4(proj4('EPSG:4326'), proj4('EPSG:3857'), [lon, lat])
 					console.log(pointxy)
 					console.log(result)
