@@ -29,7 +29,33 @@ class ZMaps {
 		//判断类型
 		if (type === "Amap") {
 			//高德地图
-			basemaplayer = new this.modules.GaodeLayer();
+			basemaplayer = new this.modules.GaodeLayer({
+				urlTemplate: "http://webst01.is.autonavi.com/appmaptile?style=7&x={x}&y={y}&z={z}",
+				tint: new this.modules.Color("#004FBB"),
+				title: "高德电子地图"
+			});
+			// var digitallTileLayer = new TintLayer({
+			// 	urlTemplate: 'http://webst01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',
+			// 	tint: new Color("#004FBB"),
+			// 	title: "高德影像注记"
+			// });
+
+			// var stamenTileLayer = new TintLayer({
+			// 	urlTemplate: "http://webst01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}",
+			// 	tint: new Color("#004FBB"),
+			// 	title: "高德影像地图"
+			// });
+
+			// var stamenTileLayer1 = new TintLayer({
+			// 	urlTemplate: "http://webst01.is.autonavi.com/appmaptile?style=7&x={x}&y={y}&z={z}",
+			// 	tint: new Color("#004FBB"),
+			// 	title: "高德电子地图"
+			// });
+			// basemaplayer = new this.modules.GaodeLayer({
+			// 	urlTemplate: "http://webst01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}",
+			// 	tint: new this.modules.Color("#004FBB"),
+			// 	title: "高德影像地图"
+			// });
 
 		} else if (type === "Tianmap") {
 
@@ -45,7 +71,7 @@ class ZMaps {
 		this._BaseMap = new this.modules.Basemap({
 			title: "地图底图",
 			id: "BaseForMap",
-			baseLayers: basemaplayer
+			baseLayers: [basemaplayer]
 		});
 		//新建地图类
 		this._Map = new this.modules.Map({
@@ -83,6 +109,10 @@ class ZMaps {
 
 	}
 	//创建GraphicLayer。用于绘制和各种临时点的显示
+	//基础地图的加载
+	initBaseLayer() {
+
+	}
 
 
 

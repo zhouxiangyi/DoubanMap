@@ -25,9 +25,15 @@ Vue.use(Lazyload,{
 Vue.use(Vant);
 Vue.config.productionTip = false
 Vue.prototype.$Toast = Toast
-
+Vue.prototype.BaseUrl = getRootPath().slice(0,-1)
 new Vue({
   router,
   store,
   render: h => h(App)
 }).$mount('#app')
+function getRootPath(){
+  var curPageUrl = window.document.location.href;
+  var rootPath = curPageUrl.split("//")[0] + curPageUrl.split("//")[1].split("/")[0] 
+                 + "/" + curPageUrl.split("//")[1].split("/")[1];
+  return rootPath;
+}
