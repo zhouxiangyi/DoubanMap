@@ -73,6 +73,10 @@ var BaiduMapAPI = {
   geoconv: function (data, method) {
     return request('/geoconv/v1/', data, method, 'BaiduMap')
   },
+  //获取poi
+   getpoi:function(data, method){
+    return request('/place/v2/search', data, method, 'BaiduMap')
+   }
 }
 export {DBAPI,BaiduMapAPI}
 

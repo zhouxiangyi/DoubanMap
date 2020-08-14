@@ -74,7 +74,10 @@
 		  
 	  </router-view> -->
 	 <van-popup v-model="showlayer" position="right" round :style="{ height: '100%' }">
-        <Layercontrol>
+        <Layercontrol 
+          :MapAction.sync="MapAction"
+          :ZMaps.sync="ZMaps"
+        >
         </Layercontrol>
     </van-popup>
     </div>
@@ -92,7 +95,7 @@ export default {
   data() {
     return {
       maptype: "Amap",
-      ZMaps: null,
+      ZMaps: null,//全局地图对象
       MapAction: null, //地图操作类
       value: "",
       logourl: require("../assets/default.png"),
@@ -136,7 +139,8 @@ export default {
             this.ZMaps,
             moudls,
             this.ZMaps._MapView,
-            this.ZMaps._SceneView
+            this.ZMaps._SceneView,
+            this.ZMaps._BaseLayers
           );
           this.MapAction.location();
         });

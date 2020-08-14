@@ -5,6 +5,7 @@ class ZMaps {
 	constructor(modules) {
 		this._Map = null;
 		this._BaseMap = null;
+		this._BaseLayers = [];
 		this._MapView = null;
 		this._SceneView = null;
 		this.ActiveView = null;
@@ -24,59 +25,19 @@ class ZMaps {
 	}
 	//初始化地图
 	initMap(type) {
-		//新建底图图层
-		let basemaplayer
-		//判断类型
-		if (type === "Amap") {
-			//高德地图
-			basemaplayer = new this.modules.GaodeLayer({
-				urlTemplate: "http://webst01.is.autonavi.com/appmaptile?style=7&x={x}&y={y}&z={z}",
-				tint: new this.modules.Color("#004FBB"),
-				title: "高德电子地图"
-			});
-			// var digitallTileLayer = new TintLayer({
-			// 	urlTemplate: 'http://webst01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',
-			// 	tint: new Color("#004FBB"),
-			// 	title: "高德影像注记"
-			// });
 
-			// var stamenTileLayer = new TintLayer({
-			// 	urlTemplate: "http://webst01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}",
-			// 	tint: new Color("#004FBB"),
-			// 	title: "高德影像地图"
-			// });
-
-			// var stamenTileLayer1 = new TintLayer({
-			// 	urlTemplate: "http://webst01.is.autonavi.com/appmaptile?style=7&x={x}&y={y}&z={z}",
-			// 	tint: new Color("#004FBB"),
-			// 	title: "高德电子地图"
-			// });
-			// basemaplayer = new this.modules.GaodeLayer({
-			// 	urlTemplate: "http://webst01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}",
-			// 	tint: new this.modules.Color("#004FBB"),
-			// 	title: "高德影像地图"
-			// });
-
-		} else if (type === "Tianmap") {
-
-		} else if (type === "Baidu") {
-			//百度地图
-			basemaplayer = new this.modules.BaiduMapLayer();
-		} else if (type === "SlicingService") {
-
-		} else if (type === "dynamiclayer") {
-
-		}
 		//新建底图类
 		this._BaseMap = new this.modules.Basemap({
 			title: "地图底图",
-			id: "BaseForMap",
-			baseLayers: [basemaplayer]
+			id: "BaseForMap"
 		});
+		//新建底图图层
+		this.initBaseLayer(type)
 		//新建地图类
 		this._Map = new this.modules.Map({
 			basemap: this._BaseMap
 		})
+
 	}
 	//初始化地图容器
 	createView(type, divid) {
@@ -110,7 +71,61 @@ class ZMaps {
 	}
 	//创建GraphicLayer。用于绘制和各种临时点的显示
 	//基础地图的加载
-	initBaseLayer() {
+	initBaseLayer(type) {
+		if (type === "Amap") {
+			//高德地图
+			var basemaplayerVector = new this.modules.GaodeLayer({
+				urlTemplate: "http://webst01.is.autonavi.com/appmaptile?style=7&x={x}&y={y}&z={z}",
+				tint: new this.modules.Color("#004FBB"),
+				title: "高德电子地图",
+				id: "Vector"
+			});
+			this._BaseLayers.push(basemaplayerVector)
+			var stamenTileLayer = new this.modules.GaodeLayer({
+				urlTemplate: "http://webst01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}",
+				tint: new this.modules.Color("#004FBB"),
+				title: "高德影像地图",
+				id: "Image"
+			});
+			this._BaseLayers.push(stamenTileLayer)
+			var digitallTileLayer = new this.modules.GaodeLayer({
+				urlTemplate: 'http://webst01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',
+				tint: new this.modules.Color("#004FBB"),
+				title: "高德影像注记",
+				id: "ImageTag"
+			});
+
+			this._BaseLayers.push(digitallTileLayer)
+			//显隐处理
+			basemaplayerVector.visible = true
+			stamenTileLayer.visible = false
+			digitallTileLayer.visible = false
+
+		} else if (type === "Tianmap") {
+
+		} else if (type === "Baidu") {
+			//百度地图
+			basemaplayer = new this.modules.BaiduMapLayer();
+		} else if (type === "SlicingService") {
+
+		} else if (type === "dynamiclayer") {
+
+		}
+
+		this._BaseMap.baseLayers = this._BaseLayers
+	}
+	addPoints(datatype, jsonArr, layId, popWindowParam) {
+
+		//参数初始化
+		let layer_points = null
+		jsonArr = jsonArr ? jsonArr : [];
+		//当数据存在的时候
+		if(jsonArr != null){
+			var layer = this._Map.findLayerById(`${layId}_layer`);
+			
+
+		}
+
 
 	}
 

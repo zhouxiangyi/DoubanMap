@@ -3,7 +3,7 @@ import { BaiduMapAPI } from '../api/httpapi'
 import config from '../../config/config'
 //地图操作类
 class MapAction {
-	constructor(map, view, ZMap, moudls, mapview, scenview) {
+	constructor(map, view, ZMap, moudls, mapview, scenview,Baselayers) {
 		if (!(map instanceof Object)) {
 			// eslint-disable-next-line no-console
 			console.log("地图对象未指定，请指定目标地图对象");
@@ -15,7 +15,9 @@ class MapAction {
 		this.moudls = moudls;
 		this.mapview = mapview;
 		this.scenview = scenview;
-
+		this.Baselayers = Baselayers;
+		this.centerBD = null;
+		this.centerGD = null;
 	}
 	//定位
 	location() {
@@ -72,53 +74,28 @@ class MapAction {
 						target: pointGraphic,
 						zoom: 18
 					});
-					let pointxy = proj4(proj4('EPSG:4326'), proj4('EPSG:3857'), [lon, lat])
-					console.log(pointxy)
-					console.log(result)
+					//高德坐标
+					_this.centerGD = [lon,lat]
+					//火星坐标转百度
+					_this.centerBD = bd09togcj02(lon,lat)
 
+					
 
-					return
-					map.getView().setCenter([lon, lat])
-					map.getView().setZoom(14)
-
-
-					let iconStyle = new Style({
-						image: new Icon(({
-							size: [18, 25],
-							src: '/static/img/default-point.png'
-						}))
-					});
-					let geometry = new Point([lon, lat])
-					let feature = new Feature(geometry);
-					let features = []
-					//设置点位样式
-					feature.setStyle(iconStyle);
-					features.push(feature)
-					//判断有没有图层，有的话清除
-					const layerlocation = conmonMethods.getWantedLayer('locationlayer', map)
-					if (typeof (layerlocation) != "undefined") {
-						console.log('进来了')
-						layerlocation.setSource(null)
-						layerlocation.setSource(new VectorSource({
-							features: features
-						}))
-					} else {
-						let locationlayer = new VectorLayer({
-							style: function (feature) {
-								return feature.get('style');
-							},
-							source: new VectorSource({
-								features: features
-							}),
-							name: 'locationlayer'
-						})
-						map.addLayer(locationlayer)
-					}
-					alert(`您当前的位置为${Posname}`)
 				}
 			});
 			//AMap.event.addListener(geolocation, 'complete', onComplete);
 		});
+	}
+	//底图切换
+	BaseMapchanges(type){
+		for(let item of this.Baselayers){
+			if(item.id.includes(type)){
+				item.visible  = true
+			}else{
+				item.visible =  false
+			}
+		}
+	
 	}
 }
 export default MapAction

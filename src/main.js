@@ -18,6 +18,7 @@ import { Lazyload } from 'vant';
 import {DBAPI,BaiduMapAPI} from './assets/js/api/httpapi.js'
 //挂载到vue原型，供所有组件使用
 Vue.prototype.DBAPI = DBAPI;
+Vue.prototype.BaiduMapAPI = BaiduMapAPI;
 Vue.use(Lazyload,{
   error:require('./assets/default.png'),
   loading:require('./assets/default.png')
